@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using wf = System.Windows.Forms;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -24,6 +25,18 @@ namespace ProjectManager
         {
             InitializeComponent();
             this.mainWindow = mainWindow;
+        }
+
+        public void OpenFolderBrowser(object sender, RoutedEventArgs e)
+        {
+            wf.FolderBrowserDialog dialog = new wf.FolderBrowserDialog();
+            dialog.InitialDirectory = "";
+            wf.DialogResult result = dialog.ShowDialog();
+
+            if (result == wf.DialogResult.OK)
+            {
+                string folder = dialog.SelectedPath;
+            }
         }
     }
 }

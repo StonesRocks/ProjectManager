@@ -24,7 +24,7 @@
             </Menu>
             <TextBox AcceptsReturn="True" />
         </DockPanel>
-        <Grid Margin="20">
+        <Grid Margin="20,30,20,20">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5*"/>
@@ -60,8 +60,18 @@
                      FontSize="20"
                      FontFamily="Arial"
                      />
+            <Button Grid.Column="1"
+                    Grid.Row="2"
+                    Width="100"
+                    Margin="5,5,15,5"
+                    HorizontalAlignment="Right"
+                    Content="Browse"
+                    FontSize="15"
+                    FontFamily="Arial"
+                    Click="OpenFolderBrowser"/>
             <StackPanel Grid.Column="0"
                         Grid.Row="1"
+                        Margin="0,10,0,0"
                         >
                 <Button Content="Idea"
                         Margin="5"/>
