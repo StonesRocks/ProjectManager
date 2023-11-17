@@ -23,7 +23,6 @@
                     <MenuItem Header="_Save" />
                 </MenuItem>
             </Menu>
-            <TextBox AcceptsReturn="True" />
         </DockPanel>
         <Grid Margin="20">
             <Grid.ColumnDefinitions>

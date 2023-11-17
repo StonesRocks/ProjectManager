@@ -70,5 +70,10 @@ namespace ProjectManager
                 Directory.CreateDirectory(folderPath);
             }
         }
+
+        public void GetAbsolutePath(Project project)
+        {
+            project.FullPath = Path.GetFullPath(folderPath);
+        }
     }
 }

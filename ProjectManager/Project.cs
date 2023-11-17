@@ -49,6 +49,7 @@ namespace ProjectManager
         }
         public string Summary { get; set; } = string.Empty;
         public string Description {  get; set; } = string.Empty;
+        public string FullPath {  get; set; } = string.Empty;
         public List<Material> Materials { get; set; } = new List<Material>();
         public Project() { }
 
