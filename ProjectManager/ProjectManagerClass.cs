@@ -11,6 +11,7 @@ namespace ProjectManager
     class ProjectManagerClass
     {
         private List<Project> _projects = new List<Project> { };
+        public string defaultAbsolutePath {  get; set; }
         public List<Project> Projects
         {
             get
@@ -41,6 +42,7 @@ namespace ProjectManager
                     Projects.Add(projectJSON);
                 }
             }
+            defaultAbsolutePath = Path.GetFullPath(folderPath);
         }
 
         public void EditName(Project project, string _newName)
@@ -48,19 +50,9 @@ namespace ProjectManager
             project.Name = _newName;
         }
 
-        public void EditSummary(Project project, string _newSummary)
+        public void CreateProject(string _name)
         {
-            project.Summary = _newSummary;
-        }
-
-        public void EditDescription(Project project, string _newDescription)
-        {
-            project.Description = _newDescription;
-        }
-
-        public void CreateProject(string _name, string _summary)
-        {
-            Projects.Add(new Project(_name, _summary, folderPath));
+            Projects.Add(new Project(_name, folderPath));
         }
 
         public void CreateFolder(string folderPath)

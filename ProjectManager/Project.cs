@@ -47,26 +47,30 @@ namespace ProjectManager
                 _name = char.ToUpper(_value[0]) + _value.Substring(1);
             }
         }
-        public string Summary { get; set; } = string.Empty;
-        public string Description {  get; set; } = string.Empty;
+
+        public string[] ProjectContent = new string[6] {"","","","","",""};
+        public Dictionary<string, int> KeyToIndex;
+        //public string Idea {  get; set; } = string.Empty;
+        //public string Research {  get; set; } = string.Empty;
+        //public string Planning {  get; set; } = string.Empty;
+        //public string Resources {  get; set; } = string.Empty;
+        //public string Review {  get; set; } = string.Empty;
         public string FullPath {  get; set; } = string.Empty;
         public List<Material> Materials { get; set; } = new List<Material>();
         public Project() { }
-
-        public Project(string _name, string _summary, string _folderPath)
-        {
-            Name = _name;
-            Summary = _summary;
-            this.startDate = DateTime.Now;
-        }
-        public Project(string _name, string _summary, string _description, string _folderPath)
+        public Project(string _name, string _folderPath)
         {
             this.Name = _name;
-            this.Description = _description;
             this.startDate = DateTime.Now;
+            KeyToIndex = new Dictionary<string, int>()
+            {
+                {"Idea", 0 },
+                {"Research", 1},
+                {"Planning", 2},
+                {"Resources", 3},
+                {"Review", 4},
+            };
         }
-
-
 
         public override string ToString()
         {

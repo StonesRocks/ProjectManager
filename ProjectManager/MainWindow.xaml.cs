@@ -27,7 +27,9 @@ namespace ProjectManager
 
         public void OpenCreateProject(object sender, RoutedEventArgs e)
         {
+            var _absolutePath = projectManager.defaultAbsolutePath;
             ProjectCreator projectCreator = new ProjectCreator(this);
+            projectCreator.SetAbsolutePath(_absolutePath);
             projectCreator.Show();
         }
     }

@@ -48,6 +48,7 @@
                          Margin="10"
                          Padding="5"
                          FontFamily="Arial"
+                         x:Name="CenterRichTextBox"
                          />
             <TextBox Grid.Column="1"
                      Grid.Row="2"
@@ -56,14 +57,12 @@
                      HorizontalContentAlignment="Center"
                      VerticalContentAlignment="Center"
                      Text="Path"
-                     FontSize="20"
+                     FontSize="18"
                      FontFamily="Arial"
                      />
-            <Button Grid.Column="1"
+            <Button Grid.Column="2"
                     Grid.Row="2"
-                    Width="100"
-                    Margin="5,5,15,5"
-                    HorizontalAlignment="Right"
+                    Margin="0"
                     Content="Browse"
                     FontSize="15"
                     FontFamily="Arial"
@@ -107,7 +106,7 @@
                     </Style>
                 </StackPanel.Resources>
                 
-                <RadioButton GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Idea</RadioButton>
+                <RadioButton GroupName="Group1" Style="{StaticResource ToggleButtonStyle}" IsChecked="True">Idea</RadioButton>
                 <RadioButton GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Research</RadioButton>
                 <RadioButton GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Planning</RadioButton>
                 <RadioButton GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Resources</RadioButton>
