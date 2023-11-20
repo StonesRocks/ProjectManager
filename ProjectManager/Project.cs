@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
+using wc = System.Windows.Controls;
 
 namespace ProjectManager
 {
-    internal class Project
+    public class Project
     {
         private DateTime _startDate = DateTime.MinValue;
         public DateTime startDate
@@ -71,7 +73,21 @@ namespace ProjectManager
                 {"Review", 4},
             };
         }
+        public void GetTextRange(wc.RichTextBox _richTextBox)
+        {
+            // Create a TextRange that contains the entire content of the RichTextBox.
+            TextRange textRange = new TextRange(
+                _richTextBox.Document.ContentStart,
+                _richTextBox.Document.ContentEnd
+            );
 
+            // Set the text of the TextRange to the string.
+            foreach ( var key in KeyToIndex.Keys )
+            {
+                textRange.Text += key;
+                textRange.Text += KeyToIndex[key];
+            }
+        }
         public override string ToString()
         {
             return Name;

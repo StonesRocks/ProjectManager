@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager
 {
-    internal class Material
+    public class Material
     {
         public string Name { get; set; } = string.Empty;
         public int Price { get; set; } = 0;

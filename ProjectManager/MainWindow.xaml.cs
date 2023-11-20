@@ -16,7 +16,7 @@ namespace ProjectManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        ProjectManagerClass projectManager;
+        public ProjectManagerClass projectManager;
         public MainWindow()
         {
             InitializeComponent();
@@ -28,9 +28,18 @@ namespace ProjectManager
         public void OpenCreateProject(object sender, RoutedEventArgs e)
         {
             var _absolutePath = projectManager.defaultAbsolutePath;
-            ProjectCreator projectCreator = new ProjectCreator(this);
+            ProjectCreator projectCreator = new ProjectCreator(this, projectManager);
             projectCreator.SetAbsolutePath(_absolutePath);
             projectCreator.Show();
         }
+
+
+        private void PreviewProject(object sender, RoutedEventArgs e)
+        {
+            Project _project = (Project)FrontPageListBox.SelectedItem;
+            _project.GetTextRange(FrontPageRichTextBox);
+        }
+
+
     }
 }

@@ -5,22 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Documents;
+using System.Xml.Linq;
 
 namespace ProjectManager
 {
-    class ProjectManagerClass
+    public class ProjectManagerClass
     {
-        private List<Project> _projects = new List<Project> { };
+        public List<Project> _listOfProjects = new List<Project> { };
         public string defaultAbsolutePath {  get; set; }
         public List<Project> Projects
         {
             get
             {
-                return _projects;
+                return _listOfProjects;
             }
             set
             {
-                _projects = value;
+                _listOfProjects = value;
             }
         }
         public string folderPath { get; set; }
@@ -44,15 +46,48 @@ namespace ProjectManager
             }
             defaultAbsolutePath = Path.GetFullPath(folderPath);
         }
+    public Dictionary<string, int> KeyToIndex = new Dictionary<string, int>()
+        {
+            {"Idea", 0 },
+            {"Research", 1},
+            {"Planning", 2},
+            {"Resources", 3},
+            {"Review", 4},
+        };
 
         public void EditName(Project project, string _newName)
         {
             project.Name = _newName;
         }
 
-        public void CreateProject(string _name)
+        public void TempProjectToProject(Project _project)
         {
-            Projects.Add(new Project(_name, folderPath));
+            _listOfProjects.Add(_project);
+            ExportToJson(_listOfProjects[_listOfProjects.Count - 1]);
+        }
+
+        public void ExportToJson(Project _project)
+        {
+            string jsonString = JsonSerializer.Serialize(_project);
+            string baseName = _project.Name;
+            int counter = 0;
+
+            // Generate the initial file path.
+            string filePath = Path.Combine(folderPath, $"{baseName}.json");
+
+            // While the file already exists...
+            while (File.Exists(filePath))
+            {
+                // Increment the counter.
+                counter++;
+
+                // Generate a new file path with the counter.
+                filePath = Path.Combine(folderPath, $"{baseName}{counter}.json");
+            }
+
+            // Write the JSON string to the file.
+            File.WriteAllText(filePath, jsonString);
+
         }
 
         public void CreateFolder(string folderPath)

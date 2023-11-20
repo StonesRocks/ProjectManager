@@ -55,6 +55,11 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <RichTextBox Grid.Column="1"
+                         Grid.Row="1"
+                         Margin="10,0,0,0"
+                         x:Name="FrontPageRichTextBox"/>
         </Grid>
+        
     </Grid>
 </Window>
