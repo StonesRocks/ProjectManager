@@ -41,8 +41,9 @@
                      VerticalContentAlignment="Center"
                      Text="Project name"
                      FontSize="20"
-                     FontFamily="Arial" LostFocus="OnNameLostFocus" GotFocus="OnNameFocus"
-                     
+                     FontFamily="Arial"
+                     LostFocus="OnNameLostFocus"
+                     GotFocus="OnNameFocus"
                      />
             <RichTextBox Grid.Column="1"
                          Grid.Row="1"

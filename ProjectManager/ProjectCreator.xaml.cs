@@ -32,6 +32,7 @@ namespace ProjectManager
             this.mainWindow = mainWindow;
             this.projectManager = projectManager;
             tempProject = new Project();
+            projectManager.SetEmptyProjectContent(tempProject, CenterRichTextBox);
         }
         int _currentContent = 0;
         public void SetProjectText(object sender, RoutedEventArgs e)

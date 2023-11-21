@@ -36,7 +36,7 @@ namespace ProjectManager
         private void PreviewProject(object sender, RoutedEventArgs e)
         {
             Project _project = (Project)FrontPageListBox.SelectedItem;
-            projectManager.StringToRichTextBox(_project, FrontPageRichTextBox, 0);
+            projectManager.UnpackContentToRichTextBox(_project, FrontPageRichTextBox);
         }
 
 

@@ -65,27 +65,66 @@ namespace ProjectManager
             project.Name = _newName;
         }
 
+        public void UnpackContentToRichTextBox(Project _project, wc.RichTextBox _myRichTextBox)
+        {
+            foreach(string rtfText in _project.ProjectContent)
+            {
+                TextRange textRange = new TextRange(_myRichTextBox.Document.ContentEnd, _myRichTextBox.Document.ContentEnd);
+                using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(rtfText)))
+                {
+                    ms.Position = 0;
+                    textRange.Load(ms, System.Windows.DataFormats.Rtf);
+                }
+            }
+        }
+
+        public void SetEmptyProjectContent(Project _project, wc.RichTextBox _richtextbox)
+        {
+            for (int i = 0; i < _project.ProjectContent.Length; i++)
+            {
+                _project.ProjectContent[i] = 
+                    Convert.ToBase64String(
+                        Encoding.ASCII.GetBytes(
+                            @"{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Arial;}}\viewkind4\uc1\pard\fs20\par}"));
+            }
+        }
+
         // Unpacks string into RichTextBox content
         public void StringToRichTextBox(Project _project, wc.RichTextBox _myRichTextBox, int _contentIndex)
         {
-            // Create a TextRange that contains the entire content of the RichTextBox.
-            TextRange textRange = new TextRange(
-                _myRichTextBox.Document.ContentStart,
-                _myRichTextBox.Document.ContentEnd
-            );
-
-            // Set the text of the TextRange to the string.
-            textRange.Text = _project.ProjectContent[_contentIndex];
+            string rtfText = _project.ProjectContent[_contentIndex];
+            TextRange textRange = new TextRange(_myRichTextBox.Document.ContentStart, _myRichTextBox.Document.ContentEnd);
+            using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(rtfText)))
+            {
+                ms.Position = 0;
+                textRange.Load(ms, System.Windows.DataFormats.Rtf);
+            }
+            //// Create a TextRange that contains the entire content of the RichTextBox.
+            //TextRange textRange = new TextRange(
+            //    _myRichTextBox.Document.ContentStart,
+            //    _myRichTextBox.Document.ContentEnd
+            //);
+            //
+            //// Set the text of the TextRange to the string.
+            //textRange.Text = _project.ProjectContent[_contentIndex];
         }
 
         // Saves RichTextBox content as a string
         public void RichTextBoxToString(Project _project, wc.RichTextBox _myRichTextBox, int _contentIndex)
         {
-            string stringOfRichTextBox = new TextRange(
-                _myRichTextBox.Document.ContentStart,
-                _myRichTextBox.Document.ContentEnd
-                ).Text;
-            _project.ProjectContent[_contentIndex] = stringOfRichTextBox;
+            TextRange textRange = new TextRange(_myRichTextBox.Document.ContentStart, _myRichTextBox.Document.ContentEnd);
+            string rtfText; // string to save to memory
+            using (MemoryStream ms = new MemoryStream())
+            {
+                textRange.Save(ms, System.Windows.DataFormats.Rtf);
+                rtfText = Convert.ToBase64String(ms.ToArray());
+            }
+            _project.ProjectContent[_contentIndex] = rtfText;
+            //string stringOfRichTextBox = new TextRange(
+            //    _myRichTextBox.Document.ContentStart,
+            //    _myRichTextBox.Document.ContentEnd
+            //    ).Text;
+            //_project.ProjectContent[_contentIndex] = stringOfRichTextBox;
         }
 
         public void ExportToJson(Project _project)
