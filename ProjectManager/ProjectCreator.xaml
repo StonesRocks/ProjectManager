@@ -39,9 +39,9 @@
                      x:Name="TextBoxProjectName"
                      HorizontalContentAlignment="Center"
                      VerticalContentAlignment="Center"
-                     Text="Placeholder"
+                     Text="Project name"
                      FontSize="20"
-                     FontFamily="Arial"
+                     FontFamily="Arial" LostFocus="OnNameLostFocus" GotFocus="OnNameFocus"
                      
                      />
             <RichTextBox Grid.Column="1"
@@ -116,13 +116,12 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Resources>
-                
-                <RadioButton Click="SetProjectText" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}" IsChecked="True">Idea</RadioButton>
-                <RadioButton Click="SetProjectText" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Research</RadioButton>
-                <RadioButton Click="SetProjectText" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Planning</RadioButton>
-                <RadioButton Click="SetProjectText" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Resources</RadioButton>
-                <RadioButton Click="SetProjectText" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}">Review</RadioButton>
-                <Button Content="Button 6"/>
+
+                <RadioButton Click="SetProjectText" Content="Idea" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}" IsChecked="True"/>
+                <RadioButton Click="SetProjectText" Content="Research" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}"/>
+                <RadioButton Click="SetProjectText" Content="Planning" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}"/>
+                <RadioButton Click="SetProjectText" Content="Resources" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}"/>
+                <RadioButton Click="SetProjectText" Content="Review" GroupName="Group1" Style="{StaticResource ToggleButtonStyle}"/>
             </StackPanel>
         </Grid>
     </Grid>

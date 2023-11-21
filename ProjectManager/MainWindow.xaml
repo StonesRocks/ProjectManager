@@ -36,7 +36,8 @@
             </Grid.RowDefinitions>
             <ListBox Grid.Row ="1"
                      x:Name="FrontPageListBox"
-                     HorizontalContentAlignment="Stretch">
+                     HorizontalContentAlignment="Stretch"
+                     SelectionChanged="PreviewProject">
                 <!-- We assign the ItemsSource in the background code-->
                 <ListBox.ItemTemplate>
                     <DataTemplate>

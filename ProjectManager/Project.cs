@@ -50,43 +50,17 @@ namespace ProjectManager
             }
         }
 
-        public string[] ProjectContent = new string[6] {"","","","","",""};
-        public Dictionary<string, int> KeyToIndex;
-        //public string Idea {  get; set; } = string.Empty;
-        //public string Research {  get; set; } = string.Empty;
-        //public string Planning {  get; set; } = string.Empty;
-        //public string Resources {  get; set; } = string.Empty;
-        //public string Review {  get; set; } = string.Empty;
+        public string[] ProjectContent { get; set; } = new string[5] { "", "", "", "", "" };
         public string FullPath {  get; set; } = string.Empty;
         public List<Material> Materials { get; set; } = new List<Material>();
-        public Project() { }
+        public Project()
+        {
+            this.startDate = DateTime.Now;
+        }
         public Project(string _name, string _folderPath)
         {
             this.Name = _name;
             this.startDate = DateTime.Now;
-            KeyToIndex = new Dictionary<string, int>()
-            {
-                {"Idea", 0 },
-                {"Research", 1},
-                {"Planning", 2},
-                {"Resources", 3},
-                {"Review", 4},
-            };
-        }
-        public void GetTextRange(wc.RichTextBox _richTextBox)
-        {
-            // Create a TextRange that contains the entire content of the RichTextBox.
-            TextRange textRange = new TextRange(
-                _richTextBox.Document.ContentStart,
-                _richTextBox.Document.ContentEnd
-            );
-
-            // Set the text of the TextRange to the string.
-            foreach ( var key in KeyToIndex.Keys )
-            {
-                textRange.Text += key;
-                textRange.Text += KeyToIndex[key];
-            }
         }
         public override string ToString()
         {

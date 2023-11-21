@@ -36,58 +36,14 @@ namespace ProjectManager
         int _currentContent = 0;
         public void SetProjectText(object sender, RoutedEventArgs e)
         {
-            tempProject.ProjectContent[_currentContent] = RichTextBoxToString(CenterRichTextBox);
+            projectManager.RichTextBoxToString(tempProject, CenterRichTextBox, _currentContent);
             var button = (wc.RadioButton)sender;
-            var projectContentElement = button.Content as string;
-            _currentContent = projectManager.KeyToIndex[projectContentElement];
-            StringToRichTextBox();
+            string projectContentKey = (string)button.Content;
+            _currentContent = projectManager.KeyToIndex[projectContentKey];
+            projectManager.StringToRichTextBox(tempProject, CenterRichTextBox, _currentContent);
         }
 
-        public void StringToRichTextBox()
-        {
-            // Create a TextRange that contains the entire content of the RichTextBox.
-            TextRange textRange = new TextRange(
-                CenterRichTextBox.Document.ContentStart,
-                CenterRichTextBox.Document.ContentEnd
-            );
-
-            // Set the text of the TextRange to the string.
-            textRange.Text = tempProject.ProjectContent[_currentContent];
-
-            //var myData = tempProject.ProjectContent[_currentContent];
-            //// Create a MemoryStream from the RTF string.
-            //MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(myData));
-            //
-            //// Create a TextRange that contains the entire content of the RichTextBox.
-            //TextRange textRange = new TextRange(
-            //    CenterRichTextBox.Document.ContentStart,
-            //    CenterRichTextBox.Document.ContentEnd
-            //);
-            //
-            //// Load the MemoryStream contents into the TextRange.
-            //textRange.Load(stream, System.Windows.DataFormats.Rtf);
-            //
-        }
-        public string RichTextBoxToString(wc.RichTextBox _myRichTextBox)
-        {
-
-            return new TextRange(
-                _myRichTextBox.Document.ContentStart, 
-                _myRichTextBox.Document.ContentEnd
-                ).Text;
-
-            //TextRange textRange = new TextRange(
-            //    _myRichTextBox.Document.ContentStart,
-            //    _myRichTextBox.Document.ContentEnd
-            //    );
-            //MemoryStream stream = new MemoryStream();
-            //textRange.Save(stream, System.Windows.DataFormats.Rtf);
-            //StreamReader streamReader = new StreamReader(stream);
-            //string myData = streamReader.ReadToEnd();
-            //streamReader.Close();
-            //return myData;
-        }
-
+        // Sets up the default absolute path
         public void SetAbsolutePath(string path)
         {
             absolutePath = path;
@@ -96,7 +52,14 @@ namespace ProjectManager
 
         public void SaveProject(object sender, RoutedEventArgs e)
         {
-            projectManager.TempProjectToProject(tempProject);
+            projectManager.RichTextBoxToString(tempProject, CenterRichTextBox, _currentContent);
+            projectManager.Projects.Add(tempProject);
+            projectManager.defaultAbsolutePath = TextBoxProjectPath.Text;
+            if (TextBoxProjectName.Text != null && TextBoxProjectName.Text != "Project name")
+            {
+                tempProject.Name = TextBoxProjectName.Text;
+            }
+            projectManager.ExportToJson(tempProject);
             Close();
         }
 
@@ -110,6 +73,23 @@ namespace ProjectManager
             {
                 string folder = dialog.SelectedPath;
                 TextBoxProjectPath.Text = folder;
+            }
+        }
+
+        private void OnNameFocus(object sender, RoutedEventArgs e)
+        {
+            var _textbox = (wc.TextBox)sender;
+            if (_textbox.Text == "Project name")
+            {
+                _textbox.Text = string.Empty;
+            }
+        }
+        private void OnNameLostFocus(object sender, RoutedEventArgs e)
+        {
+            var _textbox = (wc.TextBox)sender;
+            if (_textbox.Text == string.Empty)
+            {
+                _textbox.Text = "Project name";
             }
         }
     }

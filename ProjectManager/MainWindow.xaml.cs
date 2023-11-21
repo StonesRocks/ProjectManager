@@ -21,8 +21,7 @@ namespace ProjectManager
         {
             InitializeComponent();
             projectManager = new ProjectManagerClass();
-            List<Project> projects = projectManager.Projects;
-            FrontPageListBox.ItemsSource = projects;
+            FrontPageListBox.ItemsSource = projectManager.Projects;
         }
 
         public void OpenCreateProject(object sender, RoutedEventArgs e)
@@ -37,7 +36,7 @@ namespace ProjectManager
         private void PreviewProject(object sender, RoutedEventArgs e)
         {
             Project _project = (Project)FrontPageListBox.SelectedItem;
-            _project.GetTextRange(FrontPageRichTextBox);
+            projectManager.StringToRichTextBox(_project, FrontPageRichTextBox, 0);
         }
 
 

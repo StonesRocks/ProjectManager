@@ -7,22 +7,26 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using System.Xml.Linq;
+using System.Windows;
+using wf = System.Windows.Forms;
+using wc = System.Windows.Controls;
+using System.Windows.Data;
 
 namespace ProjectManager
 {
     public class ProjectManagerClass
     {
-        public List<Project> _listOfProjects = new List<Project> { };
         public string defaultAbsolutePath {  get; set; }
+        private List<Project> projects = new List<Project> { };
         public List<Project> Projects
         {
             get
             {
-                return _listOfProjects;
+                return projects;
             }
             set
             {
-                _listOfProjects = value;
+                projects = value;
             }
         }
         public string folderPath { get; set; }
@@ -46,7 +50,8 @@ namespace ProjectManager
             }
             defaultAbsolutePath = Path.GetFullPath(folderPath);
         }
-    public Dictionary<string, int> KeyToIndex = new Dictionary<string, int>()
+        // Dictionary to save correct information under correct label
+        public Dictionary<string, int> KeyToIndex = new Dictionary<string, int>()
         {
             {"Idea", 0 },
             {"Research", 1},
@@ -60,10 +65,27 @@ namespace ProjectManager
             project.Name = _newName;
         }
 
-        public void TempProjectToProject(Project _project)
+        // Unpacks string into RichTextBox content
+        public void StringToRichTextBox(Project _project, wc.RichTextBox _myRichTextBox, int _contentIndex)
         {
-            _listOfProjects.Add(_project);
-            ExportToJson(_listOfProjects[_listOfProjects.Count - 1]);
+            // Create a TextRange that contains the entire content of the RichTextBox.
+            TextRange textRange = new TextRange(
+                _myRichTextBox.Document.ContentStart,
+                _myRichTextBox.Document.ContentEnd
+            );
+
+            // Set the text of the TextRange to the string.
+            textRange.Text = _project.ProjectContent[_contentIndex];
+        }
+
+        // Saves RichTextBox content as a string
+        public void RichTextBoxToString(Project _project, wc.RichTextBox _myRichTextBox, int _contentIndex)
+        {
+            string stringOfRichTextBox = new TextRange(
+                _myRichTextBox.Document.ContentStart,
+                _myRichTextBox.Document.ContentEnd
+                ).Text;
+            _project.ProjectContent[_contentIndex] = stringOfRichTextBox;
         }
 
         public void ExportToJson(Project _project)
@@ -87,7 +109,6 @@ namespace ProjectManager
 
             // Write the JSON string to the file.
             File.WriteAllText(filePath, jsonString);
-
         }
 
         public void CreateFolder(string folderPath)
