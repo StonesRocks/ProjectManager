@@ -24,6 +24,11 @@ namespace ProjectManager
             FrontPageListBox.ItemsSource = projectManager.Projects;
         }
 
+        public void FileSave(object sender, RoutedEventArgs e)
+        {
+            projectManager.ExportCollectionToJson();
+        }
+
         public void OpenCreateProject(object sender, RoutedEventArgs e)
         {
             var _absolutePath = projectManager.defaultAbsolutePath;
@@ -32,6 +37,13 @@ namespace ProjectManager
             projectCreator.Show();
         }
 
+        public void OpenProject(object sender, RoutedEventArgs e)
+        {
+            Project _project = (Project)FrontPageListBox.SelectedItem;
+            ProjectCreator projectCreator = new ProjectCreator(this, projectManager, _project);
+            projectCreator.SetAbsolutePath(_project.FullPath);
+            projectCreator.Show();
+        }
 
         private void PreviewProject(object sender, RoutedEventArgs e)
         {

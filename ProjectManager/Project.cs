@@ -36,7 +36,7 @@ namespace ProjectManager
             {
                 if (_name == string.Empty)
                 {
-                    return "Unnamed project";
+                    return "UnnamedProject";
                 }
                 return _name;
             }
@@ -48,6 +48,18 @@ namespace ProjectManager
                 }
                 var _value = value;
                 _name = char.ToUpper(_value[0]) + _value.Substring(1);
+            }
+        }
+        private string _projectID;
+        public string projectID
+        {
+            get { return _projectID; }
+            set 
+            {
+                if (_projectID == null)
+                { 
+                    _projectID = $"{Name}{DateTime.Today.ToString("yyyyMMdd")}"; 
+                } 
             }
         }
 

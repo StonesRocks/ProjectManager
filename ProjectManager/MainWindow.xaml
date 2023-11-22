@@ -10,17 +10,20 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_New" />
+                    <MenuItem Header="_Directory" />
                     <MenuItem Header="_Open" />
-                    <MenuItem Header="_Save" />
+                    <MenuItem Header="_Save"
+                              Click="FileSave"/>
                     <Separator />
                     <MenuItem Header="_Exit" />
                 </MenuItem>
                 <MenuItem Header="_Project">
                     <MenuItem Header="_New"
                               Click="OpenCreateProject" />
-                    <MenuItem Header="_Open" />
-                    <MenuItem Header="_Save" />
+                    <MenuItem Header="_Import"
+                              Click="OpenProject"/>
+                    <MenuItem Header="_Export"
+                              IsEnabled="False"/>
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -59,7 +62,8 @@
             <RichTextBox Grid.Column="1"
                          Grid.Row="1"
                          Margin="10,0,0,0"
-                         x:Name="FrontPageRichTextBox"/>
+                         x:Name="FrontPageRichTextBox"
+                         IsReadOnly="True"/>
         </Grid>
         
     </Grid>

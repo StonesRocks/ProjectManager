@@ -11,14 +11,15 @@ using System.Windows;
 using wf = System.Windows.Forms;
 using wc = System.Windows.Controls;
 using System.Windows.Data;
+using System.Collections.ObjectModel;
 
 namespace ProjectManager
 {
     public class ProjectManagerClass
     {
         public string defaultAbsolutePath {  get; set; }
-        private List<Project> projects = new List<Project> { };
-        public List<Project> Projects
+        private ObservableCollection<Project> projects = new ObservableCollection<Project> { };
+        public ObservableCollection<Project> Projects
         {
             get
             {
@@ -29,27 +30,58 @@ namespace ProjectManager
                 projects = value;
             }
         }
-        public string folderPath { get; set; }
+        public string projectFolderPath { get; set; }
+        public string collectionFolderPath { get; set; }
+        public string collectionHistoryFolderPath {  get; set; }
         public ProjectManagerClass()
         {
-            // Looks for the projectLibrary and if not found then creates it.
-            CreateFolder("projectLibrary");
-            folderPath = "projectLibrary";
+            // Look for CollectionFolder
+            CreateFolder("ProjectCollection/CollectionHistory");
+            collectionFolderPath = "ProjectCollection";
+            collectionHistoryFolderPath = "ProjectCollection/CollectionHistory";
+            string[] collectionFile = Directory.GetFiles("ProjectCollection", "*.json");
 
             // Get all json files in the folder
+            foreach (string file in collectionFile)
+            {
+                string jsonString = File.ReadAllText(file);
+                if (!string.IsNullOrEmpty(jsonString))
+                {
+                    ObservableCollection<Project> collectionJSON = JsonSerializer.Deserialize<ObservableCollection<Project>>(jsonString);
+                    Projects = collectionJSON;
+                }
+            }
+
+            // Looks for the projectLibrary and if not found then creates it.
+            CreateFolder("projectLibrary");
+            projectFolderPath = "projectLibrary";
             string[] files = Directory.GetFiles("projectLibrary", "*.json");
-            // Deserialiezed Projects
+
+            // Get all json files in the folder
             foreach (string file in files)
             {
                 string jsonString = File.ReadAllText(file);
                 if (!string.IsNullOrEmpty(jsonString))
                 {
                     Project projectJSON = JsonSerializer.Deserialize<Project>(jsonString);
-                    Projects.Add(projectJSON);
+                    bool projectExists = false;
+                    foreach (Project project in projects)
+                    {
+                        if (project.projectID == projectJSON.projectID)
+                        {
+                            projectExists = true;
+                            break;
+                        }
+                    }
+                    if (!projectExists)
+                    {
+                        Projects.Add(projectJSON);
+                    }
                 }
             }
-            defaultAbsolutePath = Path.GetFullPath(folderPath);
+            defaultAbsolutePath = Path.GetFullPath(projectFolderPath);
         }
+
         // Dictionary to save correct information under correct label
         public Dictionary<string, int> KeyToIndex = new Dictionary<string, int>()
         {
@@ -65,10 +97,16 @@ namespace ProjectManager
             project.Name = _newName;
         }
 
+        private string[] myDictKeys = new string[] {"Idea", "Research", "Planning", "Resources", "Review"};
         public void UnpackContentToRichTextBox(Project _project, wc.RichTextBox _myRichTextBox)
         {
-            foreach(string rtfText in _project.ProjectContent)
+            _myRichTextBox.Document = new System.Windows.Documents.FlowDocument();
+
+            for (int i = 0; i < _project.ProjectContent.Count(); i++)
             {
+                AddFormattedText(_myRichTextBox, $"{myDictKeys[i]}\n", 20);
+
+                var rtfText = _project.ProjectContent[i];
                 TextRange textRange = new TextRange(_myRichTextBox.Document.ContentEnd, _myRichTextBox.Document.ContentEnd);
                 using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(rtfText)))
                 {
@@ -76,6 +114,16 @@ namespace ProjectManager
                     textRange.Load(ms, System.Windows.DataFormats.Rtf);
                 }
             }
+            //foreach (string rtfText in _project.ProjectContent)
+            //{
+            //    _myRichTextBox.AppendText("\n");
+            //    TextRange textRange = new TextRange(_myRichTextBox.Document.ContentEnd, _myRichTextBox.Document.ContentEnd);
+            //    using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(rtfText)))
+            //    {
+            //        ms.Position = 0;
+            //        textRange.Load(ms, System.Windows.DataFormats.Rtf);
+            //    }
+            //}
         }
 
         public void SetEmptyProjectContent(Project _project, wc.RichTextBox _richtextbox)
@@ -87,6 +135,21 @@ namespace ProjectManager
                         Encoding.ASCII.GetBytes(
                             @"{\rtf1\ansi\ansicpg1252\deff0\deflang1033{\fonttbl{\f0\fnil\fcharset0 Arial;}}\viewkind4\uc1\pard\fs20\par}"));
             }
+        }
+        public void AddFormattedText(wc.RichTextBox richTextBox, string text, double fontSize)
+        {
+            // Create a new Run with the specified text and font size
+            System.Windows.Documents.Run run = new System.Windows.Documents.Run(text)
+            {
+                FontSize = fontSize,
+                FontWeight = FontWeights.Bold
+            };
+
+            // Create a new Paragraph with the Run
+            System.Windows.Documents.Paragraph paragraph = new System.Windows.Documents.Paragraph(run);
+
+            // Add the Paragraph to the RichTextBox
+            richTextBox.Document.Blocks.Add(paragraph);
         }
 
         // Unpacks string into RichTextBox content
@@ -126,15 +189,58 @@ namespace ProjectManager
             //    ).Text;
             //_project.ProjectContent[_contentIndex] = stringOfRichTextBox;
         }
+        public void ExportCollectionToJson()
+        {
+            var Collection = projects;
+            string jsonString = JsonSerializer.Serialize(Collection);
+            string baseName = $"{DateTime.Today.ToString("yyyyMMdd")}Collection";
 
-        public void ExportToJson(Project _project)
+            // Generate the initial file path.
+            string filePath = Path.Combine(collectionFolderPath, $"{baseName}.json");
+
+            string sourceFolder = collectionFolderPath;
+            string targetFolder = collectionHistoryFolderPath;
+
+            // Ensure that the target directory exists.
+            Directory.CreateDirectory(targetFolder);
+
+            // Get the .json files in the source directory.
+            string[] jsonFiles = Directory.GetFiles(sourceFolder, "*.json");
+
+            foreach (string file in jsonFiles)
+            {
+                // Get the filename.
+                string fileName = Path.GetFileName(file);
+
+                // Create the paths for the source and destination files.
+                string sourceFile = Path.Combine(sourceFolder, fileName);
+                string destFile = Path.Combine(targetFolder, fileName);
+
+                // Move the file.
+                File.Move(sourceFile, destFile, true);
+            }
+
+            // While the file already exists...
+            //while (File.Exists(filePath))
+            //{
+            //    // Prompt to rename or override collection
+            //
+            //    // Generate a new file path with the counter.
+            //    filePath = Path.Combine(collectionFolderPath, $"{baseName}.json");
+            //}
+
+            // Write the JSON string to the file.
+            File.WriteAllText(filePath, jsonString);
+        }
+
+        public void ExportProjectToJson(Project _project)
         {
             string jsonString = JsonSerializer.Serialize(_project);
             string baseName = _project.Name;
             int counter = 0;
 
             // Generate the initial file path.
-            string filePath = Path.Combine(folderPath, $"{baseName}.json");
+            string filePath = Path.Combine(projectFolderPath, $"{baseName}.json");
 
             // While the file already exists...
             while (File.Exists(filePath))
@@ -143,7 +249,7 @@ namespace ProjectManager
                 counter++;
 
                 // Generate a new file path with the counter.
-                filePath = Path.Combine(folderPath, $"{baseName}{counter}.json");
+                filePath = Path.Combine(projectFolderPath, $"{baseName}{counter}.json");
             }
 
             // Write the JSON string to the file.
@@ -160,7 +266,7 @@ namespace ProjectManager
 
         public void GetAbsolutePath(Project project)
         {
-            project.FullPath = Path.GetFullPath(folderPath);
+            project.FullPath = Path.GetFullPath(projectFolderPath);
         }
     }
 }
