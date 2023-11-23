@@ -10,20 +10,27 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_Directory" />
-                    <MenuItem Header="_Open" />
+                    <MenuItem Header="_Open"
+                              Click="ChangeCollection"/>
+                    <MenuItem Header="_Change directory"
+                              Click="ChangeCollectionDirectory"/>
                     <MenuItem Header="_Save"
                               Click="FileSave"/>
                     <Separator />
-                    <MenuItem Header="_Exit" />
+                    <MenuItem Header="_Exit" 
+                              Click="ButtonExit"/>
                 </MenuItem>
                 <MenuItem Header="_Project">
                     <MenuItem Header="_New"
                               Click="OpenCreateProject" />
-                    <MenuItem Header="_Import"
+                    <MenuItem Header="_Open"
                               Click="OpenProject"/>
+                    <MenuItem Header="_Import"
+                              Click="ImportProject"/>
                     <MenuItem Header="_Export"
-                              IsEnabled="False"/>
+                              Click="ExportProject"/>
+                    <MenuItem Header="_Edit Collection"
+                              Click="OpenCollectionEdit"/>
                 </MenuItem>
             </Menu>
         </DockPanel>

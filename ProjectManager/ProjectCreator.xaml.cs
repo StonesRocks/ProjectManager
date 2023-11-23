@@ -52,6 +52,30 @@ namespace ProjectManager
             this.Title = $"Project: {_project.Name}";
             newProject = false;
         }
+        public void ExportProject(object sender, RoutedEventArgs e)
+        {
+            projectManager.ExportProjectToJson(thisProject);
+        }
+        public void ImportProject(object sender, RoutedEventArgs e)
+        {
+            projectManager.GetOneProject();
+            var _newProject = projectManager.Projects[projectManager.Projects.Count-1];
+
+            TextBoxProjectName.Text = _newProject.Name;
+            SetAbsolutePath(_newProject.FullPath);
+            ButtonFinish.Content = "Finish";
+            ButtonBrowse.Content = "Change";
+            projectManager.StringToRichTextBox(_newProject, CenterRichTextBox, 0);
+            this.Title = $"Project: {_newProject.Name}";
+            newProject = false;
+        }
+
+        public void ButtonExit(object sender, RoutedEventArgs e)
+        {
+            FileSave(sender, e);
+            Close();
+        }
+
         int _currentContent = 0;
         public void SetProjectText(object sender, RoutedEventArgs e)
         {
@@ -76,9 +100,10 @@ namespace ProjectManager
             thisProject.FullPath = absolutePath;
             if (newProject)
             {
+                projectManager.projectCollection.Add(thisProject);
                 projectManager.Projects.Add(thisProject);
             }
-            projectManager.defaultAbsolutePath = TextBoxProjectPath.Text;
+            projectManager.projectAbsolutePath = TextBoxProjectPath.Text;
             if (TextBoxProjectName.Text != null && TextBoxProjectName.Text != "Project name")
             {
                 thisProject.Name = TextBoxProjectName.Text;
@@ -87,33 +112,16 @@ namespace ProjectManager
             Close();
         }
 
-        public void SaveProject(object sender, RoutedEventArgs e)
-        {
-            projectManager.RichTextBoxToString(thisProject, CenterRichTextBox, _currentContent);
-            thisProject.FullPath = absolutePath;
-            if (newProject)
-            {
-                projectManager.Projects.Add(thisProject);
-            }
-            projectManager.defaultAbsolutePath = TextBoxProjectPath.Text;
-            if (TextBoxProjectName.Text != null && TextBoxProjectName.Text != "Project name")
-            {
-                thisProject.Name = TextBoxProjectName.Text;
-            }
-            projectManager.ExportProjectToJson(thisProject);
-            Close();
-        }
-
         public void OpenFolderBrowser(object sender, RoutedEventArgs e)
         {
-            wf.FolderBrowserDialog dialog = new wf.FolderBrowserDialog();
-            dialog.InitialDirectory = "";
-            wf.DialogResult result = dialog.ShowDialog();
-
-            if (result == wf.DialogResult.OK)
+            var Path = projectManager.OpenFolderBrowser();
+            if (Path == null || Path == string.Empty)
             {
-                string folder = dialog.SelectedPath;
-                TextBoxProjectPath.Text = folder;
+                System.Windows.MessageBox.Show("No path was defined");
+            }
+            else
+            {
+                TextBoxProjectPath.Text = Path;
             }
         }
 

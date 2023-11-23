@@ -17,45 +17,72 @@ namespace ProjectManager
 {
     public class ProjectManagerClass
     {
-        public string defaultAbsolutePath {  get; set; }
-        private ObservableCollection<Project> projects = new ObservableCollection<Project> { };
-        public ObservableCollection<Project> Projects
-        {
-            get
-            {
-                return projects;
-            }
-            set
-            {
-                projects = value;
-            }
-        }
+        public string projectAbsolutePath {  get; set; }
+        public string collectionAbsolutePath { get; set; }
+        public ObservableCollection<Project> Projects = new ObservableCollection<Project> { };
+        public ObservableCollection<Project> projectCollection = new ObservableCollection<Project> { };
+        public ObservableCollection<Project> projectJSON = new ObservableCollection<Project> { };
         public string projectFolderPath { get; set; }
         public string collectionFolderPath { get; set; }
         public string collectionHistoryFolderPath {  get; set; }
         public ProjectManagerClass()
         {
             // Look for CollectionFolder
-            CreateFolder("ProjectCollection/CollectionHistory");
-            collectionFolderPath = "ProjectCollection";
-            collectionHistoryFolderPath = "ProjectCollection/CollectionHistory";
-            string[] collectionFile = Directory.GetFiles("ProjectCollection", "*.json");
+            GetCollection("ProjectCollection");
 
-            // Get all json files in the folder
-            foreach (string file in collectionFile)
-            {
-                string jsonString = File.ReadAllText(file);
-                if (!string.IsNullOrEmpty(jsonString))
-                {
-                    ObservableCollection<Project> collectionJSON = JsonSerializer.Deserialize<ObservableCollection<Project>>(jsonString);
-                    Projects = collectionJSON;
-                }
-            }
 
             // Looks for the projectLibrary and if not found then creates it.
-            CreateFolder("projectLibrary");
-            projectFolderPath = "projectLibrary";
-            string[] files = Directory.GetFiles("projectLibrary", "*.json");
+            GetProjects("projectLibrary");
+
+            // Add both to Projects
+            AddCollectionandJSONToProjects();
+        }
+
+        private void AddCollectionandJSONToProjects()
+        {
+            foreach(Project _project in projectCollection)
+            {
+                Projects.Add(_project);
+            }
+            foreach(Project _project in projectJSON)
+            {
+                Projects.Add(_project);
+            }
+        }
+
+        public void GetOneProject()
+        {
+            var file = OpenFileBrowser();
+            if (file == null || file == string.Empty)
+            {
+                System.Windows.MessageBox.Show("No file was selected");
+                return;
+            }
+            string jsonString = File.ReadAllText(file);
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                Project projectJSON = JsonSerializer.Deserialize<Project>(jsonString);
+                bool projectExists = false;
+                foreach (Project project in Projects)
+                {
+                    if (project.projectID == projectJSON.projectID)
+                    {
+                        projectExists = true;
+                        break;
+                    }
+                }
+                if (!projectExists)
+                {
+                    Projects.Add(projectJSON);
+                }
+            }
+        }
+
+        public void GetProjects(string _projectFolderPath)
+        {
+            CreateFolder($"{_projectFolderPath}");
+            projectFolderPath = $"{_projectFolderPath}";
+            string[] files = Directory.GetFiles($"{_projectFolderPath}", "*.json");
 
             // Get all json files in the folder
             foreach (string file in files)
@@ -65,7 +92,7 @@ namespace ProjectManager
                 {
                     Project projectJSON = JsonSerializer.Deserialize<Project>(jsonString);
                     bool projectExists = false;
-                    foreach (Project project in projects)
+                    foreach (Project project in projectCollection)
                     {
                         if (project.projectID == projectJSON.projectID)
                         {
@@ -75,11 +102,72 @@ namespace ProjectManager
                     }
                     if (!projectExists)
                     {
-                        Projects.Add(projectJSON);
+                        this.projectJSON.Add(projectJSON);
                     }
                 }
             }
-            defaultAbsolutePath = Path.GetFullPath(projectFolderPath);
+            projectAbsolutePath = Path.GetFullPath(projectFolderPath);
+        }
+        public void ChangeCollectionDirectory()
+        {
+            var Path = OpenFolderBrowser();
+            if (Path == null || Path == string.Empty)
+            {
+                System.Windows.MessageBox.Show("No path was defined");
+            }
+            else
+            {
+                collectionAbsolutePath = Path;
+            }
+        }
+        public string OpenFileBrowser()
+        {
+            wf.OpenFileDialog dialog = new wf.OpenFileDialog();
+            dialog.InitialDirectory = "";
+            dialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+            wf.DialogResult result = dialog.ShowDialog();
+
+            if (result == wf.DialogResult.OK)
+            {
+                string file = dialog.FileName;
+                return file;
+            }
+            return string.Empty;
+        }
+        public string OpenFolderBrowser()
+        {
+            wf.FolderBrowserDialog dialog = new wf.FolderBrowserDialog();
+            dialog.InitialDirectory = "";
+            wf.DialogResult result = dialog.ShowDialog();
+
+            if (result == wf.DialogResult.OK)
+            {
+                string folder = dialog.SelectedPath;
+                return folder;
+            }
+            return string.Empty;
+        }
+
+        public void GetCollection(string _collectionFolder)
+        {
+            string _historyFolder = "CollectionHistory";
+            // Look for CollectionFolder
+            CreateFolder($"{_collectionFolder}/{_historyFolder}");
+            collectionFolderPath = $"{_collectionFolder}";
+            collectionHistoryFolderPath = $"{_collectionFolder}/{_historyFolder}";
+            string[] collectionFile = Directory.GetFiles($"{_collectionFolder}", "*.json");
+
+            // Get all json files in the folder
+            foreach (string file in collectionFile)
+            {
+                string jsonString = File.ReadAllText(file);
+                if (!string.IsNullOrEmpty(jsonString))
+                {
+                    ObservableCollection<Project> collectionJSON = JsonSerializer.Deserialize<ObservableCollection<Project>>(jsonString);
+                    projectCollection = collectionJSON;
+                }
+            }
+            collectionAbsolutePath = Path.GetFullPath(collectionFolderPath);
         }
 
         // Dictionary to save correct information under correct label
@@ -191,7 +279,7 @@ namespace ProjectManager
         }
         public void ExportCollectionToJson()
         {
-            var Collection = projects;
+            var Collection = projectCollection;
             string jsonString = JsonSerializer.Serialize(Collection);
             string baseName = $"{DateTime.Today.ToString("yyyyMMdd")}Collection";
 
@@ -233,27 +321,41 @@ namespace ProjectManager
             File.WriteAllText(filePath, jsonString);
         }
 
-        public void ExportProjectToJson(Project _project)
+        public void ExportProjectToJson(Project _project, string filePath = "")
         {
             string jsonString = JsonSerializer.Serialize(_project);
             string baseName = _project.Name;
             int counter = 0;
 
-            // Generate the initial file path.
-            string filePath = Path.Combine(projectFolderPath, $"{baseName}.json");
-
-            // While the file already exists...
-            while (File.Exists(filePath))
+            // Generate the initial file path if none is given.
+            if (filePath == "")
             {
-                // Increment the counter.
-                counter++;
-
-                // Generate a new file path with the counter.
-                filePath = Path.Combine(projectFolderPath, $"{baseName}{counter}.json");
+                filePath = Path.Combine(projectFolderPath, $"{baseName}.json");
             }
 
+            // While the file already exists...
+            if (File.Exists(filePath))
+            {
+                MessageBoxResult result = System.Windows.MessageBox.Show("Do you want to overwrite existing file?", "Confirmation", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    // Overwrite the file by not changing its name
+                }
+                else
+                {
+                    while (File.Exists(filePath))
+                    {
+                        // Increment the counter.
+                        counter++;
+            
+                        // Generate a new file path with the counter.
+                        filePath = Path.Combine(projectFolderPath, $"{baseName}{counter}.json");
+                    }
+                }
+            }
             // Write the JSON string to the file.
             File.WriteAllText(filePath, jsonString);
+            System.Windows.MessageBox.Show($"Exported {filePath}");
         }
 
         public void CreateFolder(string folderPath)
