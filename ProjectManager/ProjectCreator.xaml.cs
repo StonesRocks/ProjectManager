@@ -39,6 +39,10 @@ namespace ProjectManager
 
         public ProjectCreator(MainWindow mainWindow, ProjectManagerClass projectManager, Project _project)
         {
+            if (_project == null)
+            {
+                return;
+            }
             InitializeComponent();
             this.mainWindow = mainWindow;
             this.projectManager = projectManager;

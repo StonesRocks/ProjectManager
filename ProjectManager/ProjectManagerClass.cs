@@ -323,6 +323,7 @@ namespace ProjectManager
 
         public void ExportProjectToJson(Project _project, string filePath = "")
         {
+            if (_project == null) return;
             string jsonString = JsonSerializer.Serialize(_project);
             string baseName = _project.Name;
             int counter = 0;
@@ -353,9 +354,47 @@ namespace ProjectManager
                     }
                 }
             }
+            _project.FullPath = Path.GetFullPath(filePath);
             // Write the JSON string to the file.
             File.WriteAllText(filePath, jsonString);
             System.Windows.MessageBox.Show($"Exported {filePath}");
+        }
+        public void RemoveProjectJson(Project _project)
+        {
+            if (_project == null) return;
+            // Get the ID of the project.
+            string projectId = _project.projectID;
+
+            // Get a list of all JSON files in the directory.
+            string[] jsonFiles = Directory.GetFiles("projectLibrary", "*.json");
+
+            // Loop through each JSON file.
+            foreach (string jsonFile in jsonFiles)
+            {
+                // Read the contents of the JSON file.
+                string json = File.ReadAllText(jsonFile);
+
+                // Deserialize the JSON into a Project object.
+                Project fileProject = JsonSerializer.Deserialize<Project>(json);
+
+                // Check if the fileProject has the same ID as the given project.
+                if (fileProject.projectID == projectId)
+                {
+                    // Delete the JSON file.
+                    File.Delete(jsonFile);
+                    projectJSON.Remove(_project);
+                    Projects.Remove(_project);
+                }
+            }
+            //if (_project == null) return;
+            //var filePath = _project.FullPath;
+            //System.Windows.MessageBox.Show($"{filePath}");
+            //projectJSON.Remove(_project);
+            //if (File.Exists(filePath))
+            //{
+            //    System.Windows.MessageBox.Show($"{filePath}");
+            //    File.Delete(filePath);
+            //}
         }
 
         public void CreateFolder(string folderPath)
@@ -364,11 +403,6 @@ namespace ProjectManager
             {
                 Directory.CreateDirectory(folderPath);
             }
-        }
-
-        public void GetAbsolutePath(Project project)
-        {
-            project.FullPath = Path.GetFullPath(projectFolderPath);
         }
     }
 }

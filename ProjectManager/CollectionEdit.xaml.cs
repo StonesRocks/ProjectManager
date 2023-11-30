@@ -30,12 +30,17 @@ namespace ProjectManager
 
         public void AddJSONToCollection(object sender, RoutedEventArgs e)
         {
+            if ((Project)ListBoxProjects.SelectedItem == null)
+            {
+                return;
+            }
             Project project = (Project)ListBoxProjects.SelectedItem;
             projectManager.projectCollection.Add(project);
         }
         public void RemoveProjectFromCollection(object sender, RoutedEventArgs e)
         {
             Project project = (Project)ListBoxCollection.SelectedItem;
+            if (project == null) return;
             projectManager.ExportProjectToJson(project);
             bool ProjectExists = false;
             foreach (var JSONproject in  projectManager.projectJSON)
@@ -52,6 +57,12 @@ namespace ProjectManager
             }
             projectManager.projectCollection.Remove(project);
             projectManager.ExportCollectionToJson();
+        }
+
+        public void RemoveProjectCompletely(object sender, RoutedEventArgs e)
+        {
+            Project project = (Project)ListBoxProjects.SelectedItem;
+            projectManager.RemoveProjectJson(project);
         }
     }
 }

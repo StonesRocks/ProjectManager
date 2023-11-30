@@ -87,6 +87,9 @@
                     </TextBlock.Text>
                 </TextBlock>
             </Button>
+            <Button Content="Remove"
+                    Margin="0, 10, 0, 0"
+                    Click="RemoveProjectCompletely"/>
         </StackPanel>
     </Grid>
 </Window>
